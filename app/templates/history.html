@@ -1,32 +1,114 @@
 {% extends "base.html" %}
-{% block title %}History{% endblock %}
+{% block title %}My Loans — LibraryMS{% endblock %}
+
 {% block content %}
-<section class="history">
-  <h2>Loan History</h2>
-  <div class="toggle-group mb-2">
-    <a class="btn {% if not show_returned %}{% set show_returned = True %}active{% endif %}" hx-get="/history?show=active" hx-target="#loanList" hx-swap="outerHTML">Active</a>
-    <a class="btn {% if show_returned %}{% set show_returned = False %}active{% endif %}" hx-get="/history?show=returned" hx-target="#loanList" hx-swap="outerHTML">Returned</a>
+<div class="section-header">
+  <div>
+    <h2 class="section-title">My Loan History</h2>
+    <p class="section-subtitle">Track your borrowed books and returns</p>
   </div>
-  <div id="loanList" class="list-grid">
-    {% for loan in loans %}
-    <div class="card">
-      <div class="card-body">
-        <h3 class="card-title">{{ loan.book.title|default('Unknown') }}</h3>
-        <p class="card-meta">Borrowed: {{ loan.borrowed_date }}</p>
-        {% if loan.return_date %}
-          <p class="badge badge-success">Returned: {{ loan.return_date }}</p>
-        {% else %}
-          <p class="badge badge-warning">Active</p>
-          {% if user.role == 'admin' %}
-            <form method="POST" action="/return" hx-post="/return" hx-swap="outerHTML" style="display:inline">
-              <input type="hidden" name="book_id" value="{{ loan.book.id }}" />
-              <button class="btn btn-sm btn-success">Mark Returned</button>
-            </form>
+</div>
+
+{% if loans and loans|length > 0 %}
+<!-- Desktop Table -->
+<div class="table-wrap hidden-mobile">
+  <table class="table" aria-label="Loan history">
+    <thead>
+      <tr>
+        <th>Book</th>
+        <th>Borrowed</th>
+        <th>Due Date</th>
+        <th>Status</th>
+        <th>Returned</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for loan in loans %}
+      <tr>
+        <td>
+          <a href="/books/{{ loan.book_id }}" class="font-semibold">
+            {{ loan.book.title if loan.book else loan.book_id }}
+          </a>
+        </td>
+        <td>{{ loan.borrow_date[:10] if loan.borrow_date else '—' }}</td>
+        <td>{{ loan.due_date[:10] if loan.due_date else '—' }}</td>
+        <td>
+          {% if loan.returned %}
+          <span class="badge badge-available">Returned</span>
+          {% else %}
+          <span class="badge badge-warning badge-dot">Active</span>
           {% endif %}
+        </td>
+        <td>{{ loan.return_date[:10] if loan.return_date else '—' }}</td>
+        <td>
+          {% if not loan.returned %}
+          <form method="POST" action="/return" style="display:inline;">
+            <input type="hidden" name="book_id" value="{{ loan.book_id }}">
+            <button type="submit" class="btn btn-secondary btn-sm">Return</button>
+          </form>
+          {% else %}
+          <span class="text-muted text-sm">—</span>
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<!-- Mobile Cards -->
+<div class="hidden-desktop flex flex-col gap-4">
+  {% for loan in loans %}
+  <div class="card loan-card {% if loan.returned %}loan-returned{% endif %} card-static">
+    <div class="card-body">
+      <div class="loan-card-header">
+        <a href="/books/{{ loan.book_id }}" class="font-semibold">
+          {{ loan.book.title if loan.book else loan.book_id }}
+        </a>
+        {% if loan.returned %}
+        <span class="badge badge-available">Returned</span>
+        {% else %}
+        <span class="badge badge-warning badge-dot">Active</span>
         {% endif %}
       </div>
+      <div class="loan-card-meta">
+        <span>📅 Borrowed: {{ loan.borrow_date[:10] if loan.borrow_date else '—' }}</span>
+        <span>⏰ Due: {{ loan.due_date[:10] if loan.due_date else '—' }}</span>
+        {% if loan.return_date %}
+        <span>✅ Returned: {{ loan.return_date[:10] }}</span>
+        {% endif %}
+      </div>
+      {% if not loan.returned %}
+      <form method="POST" action="/return">
+        <input type="hidden" name="book_id" value="{{ loan.book_id }}">
+        <button type="submit" class="btn btn-secondary btn-sm">Return Book</button>
+      </form>
+      {% endif %}
     </div>
-    {% endfor %}
   </div>
-</section>
+  {% endfor %}
+</div>
+{% else %}
+<div class="empty-state">
+  <div class="empty-state-icon">📖</div>
+  <h3>No loans yet</h3>
+  <p>Browse our catalog and borrow your first book!</p>
+  <a href="/books" class="btn btn-primary">Browse Catalog</a>
+</div>
+{% endif %}
+
+<style>
+  @media (max-width: 768px) {
+    .hidden-mobile {
+      display: none !important;
+    }
+  }
+
+  @media (min-width: 769px) {
+    .hidden-desktop {
+      display: none !important;
+    }
+  }
+</style>
 {% endblock %}

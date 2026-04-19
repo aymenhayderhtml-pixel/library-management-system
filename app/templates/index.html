@@ -1,22 +1,94 @@
 {% extends "base.html" %}
-{% block title %}Home{% endblock %}
+{% block title %}LibraryMS — Your Digital Library{% endblock %}
+
 {% block content %}
+<!-- Hero Section -->
 <section class="hero">
-  <div class="hero-body">
-    <h1>Find your next read</h1>
-    <p class="lead">Search millions of books via Open Library or Google Books. Borrow locally managed copies when available.</p>
-    <div class="search-box" hx-get="/books" hx-target="#results" hx-keyup.away="true" hx-throttle="300" hx-trigger="keyup changed delay:300ms" class="search-wrapper">
-      <input name="q" id="q" placeholder="Search by title or author…" aria-label="Search books" class="search-input" />
-      <button class="btn btn-primary" type="button" hx-get="/books" hx-target="#results" hx-push-url="true">Search</button>
+  <div class="hero-content animate-fade-in-up">
+    <h1>Discover Your Next<br>Great Read</h1>
+    <p>Search thousands of books, borrow with a click, and track your reading journey — all in one place.</p>
+
+    <!-- Search Bar -->
+    <form action="/books" method="GET" class="search-container">
+      <div class="search-input-wrap">
+        <span class="search-icon" aria-hidden="true">🔍</span>
+        <input
+          type="search"
+          name="q"
+          id="hero-search"
+          class="search-input"
+          placeholder="Search by title, author, or ISBN..."
+          aria-label="Search books"
+          autocomplete="off"
+          hx-get="/books"
+          hx-target="#featured-results"
+          hx-trigger="keyup changed delay:300ms"
+          hx-indicator="#search-spinner"
+          hx-push-url="false"
+        >
+        <button type="submit" class="btn btn-primary btn-sm search-btn">Search</button>
+      </div>
+      <span class="htmx-indicator spinner" id="search-spinner" style="margin-top: var(--space-3);"></span>
+    </form>
+
+    <div class="hero-actions animate-fade-in-up-delay-2">
+      <a href="/books" class="btn btn-secondary btn-lg">Browse Catalog</a>
+      {% if not user %}
+        <a href="/register" class="btn btn-primary btn-lg">Create Free Account</a>
+      {% endif %}
     </div>
-    <div id="results" class="mt-3"></div>
   </div>
 </section>
 
-<section class="featured">
-  <h2>Featured</h2>
-  <div class="grid" id="featured">
-    <!-- populated by client or server -->
+<!-- Live search results (HTMX target) -->
+<div id="featured-results"></div>
+
+<!-- Featured Books -->
+{% if books and books|length > 0 %}
+<section class="animate-fade-in-up-delay-3">
+  <div class="section-header">
+    <div>
+      <h2 class="section-title">Featured Books</h2>
+      <p class="section-subtitle">Recent additions to our collection</p>
+    </div>
+    <a href="/books" class="btn btn-ghost btn-sm">View All →</a>
+  </div>
+
+  <div class="grid grid-cols-3">
+    {% for book in books[:6] %}
+    <a href="/books/{{ book.id }}" class="card book-card" style="text-decoration: none;">
+      <div class="book-cover">
+        {% if book.cover_url %}
+          <img src="{{ book.cover_url }}" alt="{{ book.title }} cover" loading="lazy">
+        {% else %}
+          <span class="book-cover-placeholder" aria-hidden="true">📖</span>
+        {% endif %}
+      </div>
+      <div class="card-body">
+        <h3 class="book-title">{{ book.title }}</h3>
+        <p class="book-authors">{{ book.authors|join(', ') if book.authors else 'Unknown Author' }}</p>
+        {% if book.description %}
+          <p class="book-desc">{{ book.description[:100] }}{% if book.description|length > 100 %}…{% endif %}</p>
+        {% endif %}
+      </div>
+      <div class="book-card-footer">
+        {% if book.available_copies > 0 %}
+          <span class="badge badge-available badge-dot">Available</span>
+        {% else %}
+          <span class="badge badge-unavailable badge-dot">Unavailable</span>
+        {% endif %}
+        <span class="text-xs text-muted">{{ book.available_copies }}/{{ book.total_copies }} copies</span>
+      </div>
+    </a>
+    {% endfor %}
   </div>
 </section>
+{% else %}
+<section class="empty-state animate-fade-in-up-delay-2">
+  <div class="empty-state-icon">📚</div>
+  <h3>No books yet</h3>
+  <p>The library catalog is empty. Try searching for books to add them!</p>
+  <a href="/books?q=python" class="btn btn-primary">Search Books</a>
+</section>
+{% endif %}
 {% endblock %}

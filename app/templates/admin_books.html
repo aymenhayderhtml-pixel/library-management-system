@@ -1,35 +1,112 @@
 {% extends "base.html" %}
-{% block title %}Manage Books{% endblock %}
+{% block title %}Manage Books — LibraryMS Admin{% endblock %}
+
 {% block content %}
-<section class="admin">
-  <div class="admin-header">
-    <h2>Manage Books</h2>
-    <a class="btn btn-primary" href="/admin/books/new">Add Book</a>
+<div class="section-header">
+  <div>
+    <h2 class="section-title">📋 Manage Books</h2>
+    <p class="section-subtitle">Add, edit, or remove books from the library catalog</p>
   </div>
+  <span class="badge badge-accent">Admin Panel</span>
+</div>
 
-  {% with msg = request.args.get('msg') %}
-    {% if msg %}
-      <div class="alert alert-{{ request.args.get('msg_type', 'info') }}">{{ msg }}</div>
+<!-- Add Book Form -->
+<div class="card card-static mb-8">
+  <div class="card-body">
+    <h3 class="mb-4">Add New Book</h3>
+
+    {% if form_error %}
+    <div class="alert alert-error" role="alert">
+      <span>{{ form_error }}</span>
+      <button class="alert-dismiss" onclick="this.parentElement.remove()" aria-label="Dismiss">&times;</button>
+    </div>
     {% endif %}
-  {% endwith %}
 
-  <div class="card-grid">
-    {% for book in books %}
-    <div class="card">
-      <div class="card-body">
-        <h3 class="card-title">{{ book.title }}</h3>
-        <p class="card-meta">by {{ (book.authors|join(', '))|default('Unknown') }}</p>
-        <p class="card-meta">ISBN: {{ book.isbn|default('N/A') }}</p>
-        <p class="card-meta">Available: {{ book.available_copies }} / {{ book.total_copies }}</p>
-        <div class="admin-actions">
-          <a class="btn btn-sm btn-primary" href="/admin/books/{{ book.id }}/edit">Edit</a>
-          <form method="POST" action="/admin/books/{{ book.id }}" hx-delete="/admin/books/{{ book.id }}" hx-confirm="Delete this book?" style="display:inline">
-            <button class="btn btn-sm btn-danger">Delete</button>
-          </form>
+    <form method="POST" action="/admin/books" id="add-book-form">
+      <div class="admin-form">
+        <div class="form-group">
+          <label for="title" class="form-label">Title *</label>
+          <input type="text" name="title" id="title" class="form-input" placeholder="Book title" required>
+        </div>
+        <div class="form-group">
+          <label for="authors" class="form-label">Authors</label>
+          <input type="text" name="authors" id="authors" class="form-input" placeholder="Author 1, Author 2">
+        </div>
+        <div class="form-group">
+          <label for="isbn" class="form-label">ISBN</label>
+          <input type="text" name="isbn" id="isbn" class="form-input" placeholder="978-0-123456-78-9">
+        </div>
+        <div class="form-group">
+          <label for="published_date" class="form-label">Published</label>
+          <input type="text" name="published_date" id="published_date" class="form-input" placeholder="2024">
+        </div>
+        <div class="form-group">
+          <label for="total_copies" class="form-label">Copies</label>
+          <input type="number" name="total_copies" id="total_copies" class="form-input" value="1" min="1">
+        </div>
+        <div class="form-group">
+          <label for="cover_url" class="form-label">Cover URL</label>
+          <input type="url" name="cover_url" id="cover_url" class="form-input" placeholder="https://...">
         </div>
       </div>
-    </div>
-    {% endfor %}
+      <div class="form-group" style="padding: 0 var(--space-6) var(--space-2);">
+        <label for="description" class="form-label">Description</label>
+        <textarea name="description" id="description" class="form-input" rows="3" placeholder="Brief book description..."></textarea>
+      </div>
+      <div style="padding: 0 var(--space-6) var(--space-6);">
+        <button type="submit" class="btn btn-primary">Add Book</button>
+      </div>
+    </form>
   </div>
-</section>
+</div>
+
+<!-- Book List -->
+{% if books and books|length > 0 %}
+<div class="table-wrap">
+  <table class="table" aria-label="Books management">
+    <thead>
+      <tr>
+        <th>Title</th>
+        <th>Author(s)</th>
+        <th>ISBN</th>
+        <th>Copies</th>
+        <th>Available</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for book in books %}
+      <tr>
+        <td>
+          <a href="/books/{{ book.id }}" class="font-semibold">{{ book.title }}</a>
+        </td>
+        <td class="text-sm">{{ book.authors|join(', ') if book.authors else '—' }}</td>
+        <td class="text-sm" style="font-family: var(--font-mono);">{{ book.isbn or '—' }}</td>
+        <td class="text-center">{{ book.total_copies }}</td>
+        <td>
+          {% if book.available_copies > 0 %}
+            <span class="badge badge-available">{{ book.available_copies }}</span>
+          {% else %}
+            <span class="badge badge-unavailable">0</span>
+          {% endif %}
+        </td>
+        <td>
+          <form method="POST" action="/admin/books/{{ book.id }}/delete"
+            style="display:inline;"
+            onsubmit="return confirm('Delete &quot;{{ book.title }}&quot;? This cannot be undone.')">
+            <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<div class="empty-state">
+  <div class="empty-state-icon">📚</div>
+  <h3>No books in the library</h3>
+  <p>Use the form above to add your first book!</p>
+</div>
+{% endif %}
 {% endblock %}

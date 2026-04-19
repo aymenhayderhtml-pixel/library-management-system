@@ -1,4 +1,6 @@
-import pytest
+import pathlib
+p = pathlib.Path('tests/unit/test_storage.py')
+p.write_text('''import pytest
 from app.database import db_session, BookModel, UserModel, LoanModel
 
 def setup_module(module):
@@ -55,3 +57,4 @@ def test_loan_availability():
     assert len(active) == 0
     loan2 = create_loan("user_789", book["id"])
     assert loan2["returned"] is False
+''')
