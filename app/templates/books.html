@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Catalog{% endblock %}
+{% block content %}
+<section class="catalog">
+  <div class="catalog-header">
+    <h2>Catalog</h2>
+    <div class="catalog-actions">
+      <input id="searchBooks" class="search-input" placeholder="Search…" hx-get="/books" hx-target="#bookList" hx-keyup.away="true" hx-throttle="300" hx-push-url="true" />
+      {% if user and user.role == 'admin' %}
+        <a class="btn btn-primary" href="/admin/books">Manage Books</a>
+      {% endif %}
+    </div>
+  </div>
+  <div id="bookList" class="grid">
+    {% for book in books %}
+    <div class="card" id="book-{{ book.id }}">
+      <div class="card-cover">{{ book.title[:30]|default('📖') }}</div>
+      <div class="card-body">
+        <h3 class="card-title"><a href="/books/{{ book.id }}">{{ book.title }}</a></h3>
+        <p class="card-meta">by {{ (book.authors|join(', '))|default('Unknown') }}</p>
+        <span class="badge badge-{{ 'success' if book.available_copies > 0 else 'danger' }}">
+          {{ book.available_copies }} available
+        </span>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}

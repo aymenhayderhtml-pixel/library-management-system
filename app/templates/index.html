@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Home{% endblock %}
+{% block content %}
+<section class="hero">
+  <div class="hero-body">
+    <h1>Find your next read</h1>
+    <p class="lead">Search millions of books via Open Library or Google Books. Borrow locally managed copies when available.</p>
+    <div class="search-box" hx-get="/books" hx-target="#results" hx-keyup.away="true" hx-throttle="300" hx-trigger="keyup changed delay:300ms" class="search-wrapper">
+      <input name="q" id="q" placeholder="Search by title or author…" aria-label="Search books" class="search-input" />
+      <button class="btn btn-primary" type="button" hx-get="/books" hx-target="#results" hx-push-url="true">Search</button>
+    </div>
+    <div id="results" class="mt-3"></div>
+  </div>
+</section>
+
+<section class="featured">
+  <h2>Featured</h2>
+  <div class="grid" id="featured">
+    <!-- populated by client or server -->
+  </div>
+</section>
+{% endblock %}

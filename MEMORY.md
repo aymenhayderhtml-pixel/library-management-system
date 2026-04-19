@@ -1,0 +1,8 @@
+- Library Management System project plan (created 2026-04-18)
+  - Goal: Learning project; prototype with free book API; optionally publish later.
+  - Scope: Catalog/search, borrowing/returns, admin + user with login, web UI, free API, local development.
+  - Stack preferences: Python (primary), no SQL preference (use lightweight NoSQL/JSON for simplicity), use AI/code assistance heavily.
+  - Constraints: Solo, local environment, no hard constraints.
+  - Decisions: Python + FastAPI for API layer; Pydantic for validation; JSON files or SQLite (lightweight) for storage; optional MongoDB if scaling later; web frontend via HTMX + templates (or optionally a lightweight SPA). Authentication via passlib/BCrypt; logging and simple rate limiting.
+  - Next steps: Scaffold project, define data models, create CRUD for books and users, integrate free book API (e.g., Open Library), implement borrowing logic, add admin panel, write tests.
+  - Repository structure placeholder created (see scaffold).

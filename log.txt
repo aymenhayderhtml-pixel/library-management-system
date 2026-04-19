@@ -1,0 +1,2 @@
+This project is not configured for the web.
+To configure this project for the web, run flutter create . --platforms web

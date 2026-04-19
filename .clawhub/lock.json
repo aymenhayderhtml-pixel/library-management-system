@@ -1,0 +1,61 @@
+{
+  "version": 1,
+  "skills": {
+    "gog": {
+      "version": "1.0.0",
+      "installedAt": 1772535517669
+    },
+    "ontology": {
+      "version": "1.0.4",
+      "installedAt": 1773525766681
+    },
+    "xiucheng-self-improving-agent": {
+      "version": "1.0.0",
+      "installedAt": 1773525934014
+    },
+    "self-improving-agent": {
+      "version": "3.0.2",
+      "installedAt": 1773526056776
+    },
+    "obsidian": {
+      "version": "1.0.0",
+      "installedAt": 1773526311894
+    },
+    "skill-vetter-1-0-0": {
+      "version": "1.0.0",
+      "installedAt": 1773527074818
+    },
+    "nano-pdf": {
+      "version": "1.0.0",
+      "installedAt": 1773527287005
+    },
+    "find-skills": {
+      "version": "0.1.0",
+      "installedAt": 1773527599469
+    },
+    "proactive-agent-skill": {
+      "version": "1.0.0",
+      "installedAt": 1773527900043
+    },
+    "openai-whisper": {
+      "version": "1.0.0",
+      "installedAt": 1773529103504
+    },
+    "auto-updater": {
+      "version": "1.0.0",
+      "installedAt": 1773529231129
+    },
+    "automation-workflows": {
+      "version": "0.1.0",
+      "installedAt": 1773529340286
+    },
+    "qmd": {
+      "version": "1.0.0",
+      "installedAt": 1773530278698
+    },
+    "free-ride": {
+      "version": "1.0.5",
+      "installedAt": 1774181742808
+    }
+  }
+}

@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Manage Books{% endblock %}
+{% block content %}
+<section class="admin">
+  <div class="admin-header">
+    <h2>Manage Books</h2>
+    <a class="btn btn-primary" href="/admin/books/new">Add Book</a>
+  </div>
+
+  {% with msg = request.args.get('msg') %}
+    {% if msg %}
+      <div class="alert alert-{{ request.args.get('msg_type', 'info') }}">{{ msg }}</div>
+    {% endif %}
+  {% endwith %}
+
+  <div class="card-grid">
+    {% for book in books %}
+    <div class="card">
+      <div class="card-body">
+        <h3 class="card-title">{{ book.title }}</h3>
+        <p class="card-meta">by {{ (book.authors|join(', '))|default('Unknown') }}</p>
+        <p class="card-meta">ISBN: {{ book.isbn|default('N/A') }}</p>
+        <p class="card-meta">Available: {{ book.available_copies }} / {{ book.total_copies }}</p>
+        <div class="admin-actions">
+          <a class="btn btn-sm btn-primary" href="/admin/books/{{ book.id }}/edit">Edit</a>
+          <form method="POST" action="/admin/books/{{ book.id }}" hx-delete="/admin/books/{{ book.id }}" hx-confirm="Delete this book?" style="display:inline">
+            <button class="btn btn-sm btn-danger">Delete</button>
+          </form>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}History{% endblock %}
+{% block content %}
+<section class="history">
+  <h2>Loan History</h2>
+  <div class="toggle-group mb-2">
+    <a class="btn {% if not show_returned %}{% set show_returned = True %}active{% endif %}" hx-get="/history?show=active" hx-target="#loanList" hx-swap="outerHTML">Active</a>
+    <a class="btn {% if show_returned %}{% set show_returned = False %}active{% endif %}" hx-get="/history?show=returned" hx-target="#loanList" hx-swap="outerHTML">Returned</a>
+  </div>
+  <div id="loanList" class="list-grid">
+    {% for loan in loans %}
+    <div class="card">
+      <div class="card-body">
+        <h3 class="card-title">{{ loan.book.title|default('Unknown') }}</h3>
+        <p class="card-meta">Borrowed: {{ loan.borrowed_date }}</p>
+        {% if loan.return_date %}
+          <p class="badge badge-success">Returned: {{ loan.return_date }}</p>
+        {% else %}
+          <p class="badge badge-warning">Active</p>
+          {% if user.role == 'admin' %}
+            <form method="POST" action="/return" hx-post="/return" hx-swap="outerHTML" style="display:inline">
+              <input type="hidden" name="book_id" value="{{ loan.book.id }}" />
+              <button class="btn btn-sm btn-success">Mark Returned</button>
+            </form>
+          {% endif %}
+        {% endif %}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,29 @@
+[
+  {
+    "id": "4deabfb6-7403-452e-a47f-1e70426391eb",
+    "title": "Metamorphoses",
+    "authors": [
+      "Ovid"
+    ],
+    "isbn": null,
+    "published_date": 1479,
+    "description": null,
+    "cover_url": "https://covers.openlibrary.org/b/id/7212118-M.jpg",
+    "total_copies": 1,
+    "available_copies": 1
+  },
+  {
+    "id": "1bb01892-1722-4b22-8bf0-94c099d35bb9",
+    "title": "Learning Python",
+    "authors": [
+      "Mark Lutz",
+      "David Ascher"
+    ],
+    "isbn": null,
+    "published_date": 1999,
+    "description": null,
+    "cover_url": "https://covers.openlibrary.org/b/id/1312568-M.jpg",
+    "total_copies": 1,
+    "available_copies": 1
+  }
+]

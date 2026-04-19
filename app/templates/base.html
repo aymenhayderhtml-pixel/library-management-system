@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Library Management System{% endblock %}</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/style.css">
+  <script src="https://unpkg.com/htmx.org@1.9.12"></script>
+  {% block extra_head %}{% endblock %}
+</head>
+<body>
+  <header class="glass">
+    <div class="container nav-row">
+      <a href="/" class="brand">📚 Library</a>
+      <nav class="nav-links" id="navLinks">
+        <a href="/">Home</a>
+        <a href="/books">Catalog</a>
+        {% if user and user.role == 'admin' %}
+          <a href="/admin/books">Admin</a>
+          <a href="/history">History</a>
+        {% else %}
+          <a href="/history">History</a>
+        {% endif %}
+        {% if user %}
+          <span class="user">Hello, {{ user.username }}</span>
+          <a href="/logout" class="btn btn-sm btn-ghost">Logout</a>
+        {% else %}
+          <a href="/login" class="btn btn-sm btn-primary">Login</a>
+          <a href="/register" class="btn btn-sm btn-outline">Register</a>
+        {% endif %}
+        <button class="menu-toggle" id="menuToggle" aria-label="Toggle navigation">☰</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    {% with msg = request.args.get('msg') %}
+      {% if msg %}
+        {% set msg_type = request.args.get('msg_type', 'info') %}
+        <div class="alert alert-{{ msg_type }}" role="alert" hx-swap-oob="true">{{ msg }}</div>
+      {% endif %}
+    {% endwith %}
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="glass">
+    <div class="container">
+      <span>© 2026 Library Management System</span>
+    </div>
+  </footer>
+
+  <script>
+    // Mobile nav toggle
+    document.getElementById('menuToggle')?.addEventListener('click', () => {
+      document.getElementById('navLinks')?.classList.toggle('open');
+    });
+  </script>
+</body>
+</html>

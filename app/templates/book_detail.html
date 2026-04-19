@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}{{ book.title }}{% endblock %}
+{% block content %}
+<article class="detail">
+  <div class="detail-cover">{{ book.cover_url[:50]|default('📘') }}</div>
+  <div class="detail-body">
+    <h1>{{ book.title }}</h1>
+    <div class="detail-meta">
+      <p><strong>Author(s):</strong> {{ (book.authors|join(', '))|default('Unknown') }}</p>
+      <p><strong>Published:</strong> {{ book.published_date|default('N/A') }}</p>
+      <p><strong>ISBN:</strong> {{ book.isbn|default('N/A') }}</p>
+      <p><strong>Description:</strong> {{ book.description|default('No description available.') }}</p>
+    </div>
+
+    <div class="detail-actions">
+      {% if user and user.role == 'admin' %}
+        <a class="btn btn-primary" href="/admin/books/{{ book.id }}/edit">Edit</a>
+        <button class="btn btn-danger" hx-delete="/admin/books/{{ book.id }}" hx-confirm="Are you sure?">Delete</button>
+      {% endif %}
+
+      {% if user %}
+        {% if not has_active_loan %}
+          <form method="POST" action="/borrow" hx-post="/borrow" hx-swap="outerHTML" class="inline">
+            <input type="hidden" name="book_id" value="{{ book.id }}" />
+            <button class="btn btn-success">Borrow</button>
+          </form>
+        {% else %}
+          <form method="POST" action="/return" hx-post="/return" hx-swap="outerHTML" class="inline">
+            <input type="hidden" name="book_id" value="{{ book.id }}" />
+            <button class="btn btn-ghost">Return</button>
+          </form>
+        {% endif %}
+      {% else %}
+        <a class="btn btn-ghost" href="/login">Login to borrow</a>
+      {% endif %}
+      <a class="btn btn-ghost" href="/books">Back to catalog</a>
+    </div>
+  </div>
+</article>
+{% endblock %}
